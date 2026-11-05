@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuis Rumus Tenses</title>
+<style>
+:root{--bg:#f4f5f9;--card:#fff;--tx:#1d2233;--mu:#6b7287;--bd:#dfe2ec;--ac:#4f46e5;--ok:#15803d;--okb:#dcfce7;--no:#b91c1c;--nob:#fee2e2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1220;--card:#181c2e;--tx:#eceefa;--mu:#9aa1ba;--bd:#2a3050;--ac:#818cf8;--ok:#86efac;--okb:#12301f;--no:#fca5a5;--nob:#3a1717}}
+:root[data-theme="dark"]{--bg:#0f1220;--card:#181c2e;--tx:#eceefa;--mu:#9aa1ba;--bd:#2a3050;--ac:#818cf8;--ok:#86efac;--okb:#12301f;--no:#fca5a5;--nob:#3a1717}
+*{box-sizing:border-box;margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html,body{background:var(--bg);color:var(--tx)}
+body{min-height:100%;display:flex;justify-content:center;padding:16px}
+.app{width:100%;max-width:640px;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:22px;align-self:flex-start}
+h1{font-size:1.3rem}.sub{color:var(--mu);font-size:.9rem;margin:4px 0 18px}
+h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu);margin:16px 0 8px}
+.seg{display:grid;gap:8px}
+.seg button,.opt,.btn{font-size:1rem;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left}
+.seg button.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac) inset}
+.seg small{display:block;color:var(--mu);font-size:.8rem;margin-top:2px}
+.btn{background:var(--ac);color:#fff;border-color:var(--ac);text-align:center;font-weight:600;width:100%;margin-top:18px}
+.btn.alt{background:transparent;color:var(--tx);border-color:var(--bd)}
+.hide{display:none!important}
+.top{display:flex;justify-content:space-between;font-size:.85rem;color:var(--mu);margin-bottom:8px}
+.bar{height:6px;background:var(--bd);border-radius:3px;overflow:hidden;margin-bottom:20px}.bar i{display:block;height:100%;background:var(--ac);width:0;transition:width .25s}
+.q{font-size:1.6rem;font-weight:700;margin-bottom:16px;line-height:1.25}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;font-weight:500}
+.opt b{flex:none;width:24px;height:24px;border-radius:6px;background:var(--bd);font-size:.75rem;display:flex;align-items:center;justify-content:center}
+.opt:not(:disabled):hover{border-color:var(--ac)}
+.opt.ok{background:var(--okb);border-color:var(--ok);color:var(--ok)}
+.opt.no{background:var(--nob);border-color:var(--no);color:var(--no)}
+.opt:disabled{cursor:default}
+.note{margin-top:14px;font-size:.88rem;color:var(--mu);padding:10px 12px;border-radius:8px;border:1px dashed var(--bd)}
+.big{font-size:2.6rem;font-weight:800;text-align:center;margin:8px 0}
+.wl{margin-top:8px;display:grid;gap:8px}
+.wl div{border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:.9rem}
+.wl span{display:block;color:var(--ok);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="start">
+  <h1>Kuis Rumus Tenses</h1>
+  <p class="sub">Pilih jawaban yang benar. Tidak ada clue sebelum menjawab.</p>
+  <h3>Mode soal</h3>
+  <div class="seg" id="modeSeg">
+    <button data-v="gab" class="on">Rumus Gabungan<small>Past Continuous → V2 + Be V-ing</small></button>
+    <button data-v="jadi">Rumus Jadi<small>Past Continuous → Was/Were + V-ing</small></button>
+  </div>
+  <h3>Cakupan tenses</h3>
+  <div class="seg" id="scopeSeg">
+    <button data-v="act" class="on">16 tenses<small>Active, 1 sampai 4 unsur</small></button>
+    <button data-v="pas">16 tenses Passive<small>Ditambah Be V3, sampai 5 unsur</small></button>
+    <button data-v="all">Semua (32 soal)<small>Active + Passive dicampur</small></button>
+  </div>
+  <button class="btn" id="go">Mulai</button>
+</div>
+
+<div id="quiz" class="hide">
+  <div class="top"><span id="prog"></span><span id="sc"></span></div>
+  <div class="bar"><i id="barfill"></i></div>
+  <div class="q" id="qname"></div>
+  <div class="opts" id="opts"></div>
+  <div class="note hide" id="note"></div>
+  <button class="btn hide" id="next">Lanjut</button>
+</div>
+
+<div id="res" class="hide">
+  <h1>Selesai</h1>
+  <div class="big" id="final"></div>
+  <p class="sub" id="evalt" style="text-align:center"></p>
+  <div class="wl" id="wl"></div>
+  <button class="btn" id="again">Ulangi dari awal (diacak lagi)</button>
+  <button class="btn alt hide" id="redo">Ulangi yang salah saja</button>
+  <button class="btn alt" id="menu">Ganti mode</button>
+</div>
+
+</div>
+<script>
+const TIMES=["Present","Past","Future","Past Future"];
+const ASP=[{n:"Simple",p:0,c:0},{n:"Continuous",p:0,c:1},{n:"Perfect",p:1,c:0},{n:"Perfect Continuous",p:1,c:1}];
+const TC={"Present":"V1/Vs","Past":"V2","Future":"Will Vbi","Past Future":"V2 + Will Vbi"};
+const HAVE={bi:"Have",v1:"Have/Has",v2:"Had",v3:"Had",ing:"Having"};
+const BE={bi:"Be",v1:"Is/Am/Are",v2:"Was/Were",v3:"Been",ing:"Being"};
+const MAIN={bi:"Vbi",v1:"V1/Vs",v2:"V2",v3:"V3",ing:"V-ing"};
+
+function nameOf(t,a,pas){
+  const base=a.n==="Simple"?"Simple "+t:t+" "+a.n;
+  return base+(pas?" Passive":"");
+}
+function gabungan(t,a,pas){
+  const o=[];
+  if(a.n==="Simple")o.push("x");
+  o.push(TC[t]);
+  if(a.p)o.push("Have V3");
+  if(a.c)o.push("Be V-ing");
+  if(pas)o.push("Be V3");
+  return o.join(" + ");
+}
+function jadi(t,a,pas){
+  const items=[];
+  if(a.p)items.push("have");
+  if(a.c)items.push("becont");
+  if(pas)items.push("bepass");
+  items.push("main");
+  const out=[];let req;
+  if(t==="Future"){out.push("Will");req="bi"}
+  else if(t==="Past Future"){out.push("Would");req="bi"}
+  else req=t==="Present"?"v1":"v2";
+  for(const k of items){
+    if(k==="have"){out.push(HAVE[req]);req="v3"}
+    else if(k==="becont"){out.push(BE[req]);req="ing"}
+    else if(k==="bepass"){out.push(BE[req]);req="v3"}
+    else out.push(MAIN[req]);
+  }
+  return out.join(" + ");
+}
+const ALL=[];
+for(const pas of [0,1])for(const t of TIMES)for(const a of ASP)
+  ALL.push({name:nameOf(t,a,pas),pas,gab:gabungan(t,a,pas),jadi:jadi(t,a,pas)});
+
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const toks=s=>new Set(s.split(/[\s+]+/).filter(Boolean));
+function sim(a,b){const x=toks(a),y=toks(b);let i=0;x.forEach(v=>{if(y.has(v))i++});return i/(x.size+y.size-i)}
+
+let mode="gab",scope="act",queue=[],idx=0,score=0,wrong=[],locked=false,cur=null;
+
+function seg(id,cb){
+  $(id).addEventListener("click",e=>{
+    const b=e.target.closest("button");if(!b)return;
+    [...$(id).children].forEach(c=>c.classList.remove("on"));
+    b.classList.add("on");cb(b.dataset.v);
+  });
+}
+seg("modeSeg",v=>mode=v);
+seg("scopeSeg",v=>scope=v);
+
+function pool(){return ALL.filter(q=>scope==="all"||(scope==="pas")===!!q.pas)}
+function start(list){
+  queue=shuffle(list||pool());idx=0;score=0;wrong=[];
+  $("start").classList.add("hide");$("res").classList.add("hide");$("quiz").classList.remove("hide");
+  show();
+}
+function show(){
+  locked=false;cur=queue[idx];
+  $("prog").textContent="Soal "+(idx+1)+" dari "+queue.length;
+  $("sc").textContent="Benar: "+score;
+  $("barfill").style.width=(idx/queue.length*100)+"%";
+  $("qname").textContent=cur.name;
+  $("note").classList.add("hide");$("next").classList.add("hide");
+  const ans=cur[mode];
+  const others=ALL.filter(q=>q[mode]!==ans).map(q=>({s:q[mode],w:sim(ans,q[mode])+Math.random()*.25}));
+  const seen=new Set([ans]),d=[];
+  others.sort((a,b)=>b.w-a.w);
+  for(const o of others){if(!seen.has(o.s)){seen.add(o.s);d.push(o.s)}if(d.length===3)break}
+  const opts=shuffle([ans,...d]);
+  const box=$("opts");box.innerHTML="";
+  opts.forEach((o,i)=>{
+    const b=document.createElement("button");b.className="opt";
+    const k=document.createElement("b");k.textContent=i+1;
+    const t=document.createElement("span");t.textContent=o;
+    b.append(k,t);b.onclick=()=>pick(b,o);box.appendChild(b);
+  });
+}
+function pick(btn,val){
+  if(locked)return;locked=true;
+  const ans=cur[mode];
+  [...$("opts").children].forEach(b=>{
+    b.disabled=true;
+    if(b.lastChild.textContent===ans)b.classList.add("ok");
+  });
+  if(val===ans)score++;
+  else{btn.classList.add("no");wrong.push(cur)}
+  $("sc").textContent="Benar: "+score;
+  const other=mode==="gab"?cur.jadi:cur.gab;
+  $("note").textContent=(mode==="gab"?"Rumus jadi: ":"Gabungan: ")+other;
+  $("note").classList.remove("hide");
+  $("next").textContent=idx===queue.length-1?"Lihat hasil":"Lanjut";
+  $("next").classList.remove("hide");
+}
+function next(){
+  if(!locked)return;
+  idx++;
+  if(idx<queue.length)show();else finish();
+}
+function finish(){
+  $("quiz").classList.add("hide");$("res").classList.remove("hide");
+  $("final").textContent=score+" / "+queue.length;
+  const p=score/queue.length;
+  $("evalt").textContent=p===1?"Sempurna. Coba lagi dengan urutan baru untuk memastikan benar-benar hafal."
+    :p>=.7?"Sudah bagus. Ulangi yang salah sampai habis.":"Terus ulang, urutan soal dan pilihan akan diacak lagi.";
+  const wl=$("wl");wl.innerHTML="";
+  wrong.forEach(q=>{
+    const d=document.createElement("div");d.textContent=q.name;
+    const s=document.createElement("span");s.textContent=q[mode];d.appendChild(s);wl.appendChild(d);
+  });
+  $("redo").classList.toggle("hide",!wrong.length);
+}
+$("go").onclick=()=>start();
+$("next").onclick=next;
+$("again").onclick=()=>start(queue.slice());
+$("redo").onclick=()=>start(wrong.slice());
+$("menu").onclick=()=>{$("res").classList.add("hide");$("start").classList.remove("hide")};
+document.addEventListener("keydown",e=>{
+  if($("quiz").classList.contains("hide"))return;
+  if(e.key>="1"&&e.key<="4"&&!locked){const b=$("opts").children[+e.key-1];if(b)b.click()}
+  else if(e.key==="Enter"&&locked)next();
+});
+</script>
+</body>
+</html>
